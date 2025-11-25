@@ -1,0 +1,215 @@
+@inherits LayoutComponentBase
+@inject IJSRuntime JS
+
+<div class="@themeClass" data-lang="@currentLang">
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <!-- Logo -->
+            <div class="nav-logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <rect width="40" height="40" rx="10" fill="url(#nav-logo-gradient)"/>
+                    <path d="M12 15L20 10L28 15V25L20 30L12 25V15Z" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M20 20V30" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <defs>
+                        <linearGradient id="nav-logo-gradient" x1="0" y1="0" x2="40" y2="40">
+                            <stop offset="0%" stop-color="#0066FF"/>
+                            <stop offset="100%" stop-color="#7C3AED"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="nav-brand" data-i18n="brand">MoneyWorkdesk</span>
+            </div>
+
+            <!-- Navigation Links (Desktop) -->
+            <div class="nav-links">
+                <a href="#features" data-i18n="nav.features">Features</a>
+                <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
+                <a href="#about" data-i18n="nav.about">About</a>
+                <a href="#contact" data-i18n="nav.contact">Contact</a>
+            </div>
+
+            <!-- Right Side Actions -->
+            <div class="nav-actions">
+                <!-- Language Selector -->
+                <div class="language-selector">
+                    <button class="lang-btn" id="langBtn" @onclick="ToggleLanguageDropdown">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="10" cy="10" r="8"/>
+                            <path d="M2 10h16M10 2a15.3 15.3 0 0 1 4 8 15.3 15.3 0 0 1-4 8 15.3 15.3 0 0 1-4-8 15.3 15.3 0 0 1 4-8z"/>
+                        </svg>
+                        <span id="currentLang">@currentLang.ToUpper()</span>
+                    </button>
+                    <div class="lang-dropdown @(showLangDropdown ? "show" : "")" id="langDropdown">
+                        <button @onclick='() => ChangeLanguage("en")'>🇬🇧 English</button>
+                        <button @onclick='() => ChangeLanguage("nl-be")'>🇧🇪 Nederlands (BE)</button>
+                        <button @onclick='() => ChangeLanguage("nl")'>🇳🇱 Nederlands (NL)</button>
+                        <button @onclick='() => ChangeLanguage("fr")'>🇫🇷 Français</button>
+                        <button @onclick='() => ChangeLanguage("de")'>🇩🇪 Deutsch</button>
+                        <button @onclick='() => ChangeLanguage("es")'>🇪🇸 Español</button>
+                    </div>
+                </div>
+
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" id="themeToggle" @onclick="ToggleTheme" aria-label="Toggle theme">
+                    <svg class="sun-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="display: @(isDarkMode ? "none" : "block")">
+                        <circle cx="10" cy="10" r="4"/>
+                        <path d="M10 2v2M10 16v2M18 10h-2M6 10H4M15.07 4.93l-1.41 1.41M6.34 13.66L4.93 15.07M15.07 15.07l-1.41-1.41M6.34 6.34L4.93 4.93"/>
+                    </svg>
+                    <svg class="moon-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="display: @(isDarkMode ? "block" : "none")">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+
+                <!-- Login/User Area -->
+                <div class="user-area">
+                    <!-- When logged out -->
+                    <div class="logged-out">
+                        <a href="/login" class="btn btn-secondary" data-i18n="nav.login">Login</a>
+                        <a href="/register" class="btn btn-primary" data-i18n="nav.register">Get Started</a>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" @onclick="ToggleMobileMenu">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12h18M3 6h18M3 18h18"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="mobile-nav @(showMobileMenu ? "show" : "")" id="mobileNav">
+            <a href="#features" @onclick="CloseMobileMenu" data-i18n="nav.features">Features</a>
+            <a href="#pricing" @onclick="CloseMobileMenu" data-i18n="nav.pricing">Pricing</a>
+            <a href="#about" @onclick="CloseMobileMenu" data-i18n="nav.about">About</a>
+            <a href="#contact" @onclick="CloseMobileMenu" data-i18n="nav.contact">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        @Body
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h4 data-i18n="footer.company">Company</h4>
+                    <a href="/about" data-i18n="footer.about">About Us</a>
+                    <a href="/pricing" data-i18n="footer.pricing">Pricing</a>
+                    <a href="/contact" data-i18n="footer.contact">Contact</a>
+                    <a href="/blog" data-i18n="footer.blog">Blog</a>
+                </div>
+                <div class="footer-column">
+                    <h4 data-i18n="footer.product">Product</h4>
+                    <a href="#features" data-i18n="footer.features">Features</a>
+                    <a href="/integrations" data-i18n="footer.integrations">Integrations</a>
+                    <a href="/security" data-i18n="footer.security">Security</a>
+                    <a href="/api" data-i18n="footer.api">API</a>
+                </div>
+                <div class="footer-column">
+                    <h4 data-i18n="footer.resources">Resources</h4>
+                    <a href="/help" data-i18n="footer.help">Help Center</a>
+                    <a href="/guides" data-i18n="footer.guides">Guides</a>
+                    <a href="/peppol" data-i18n="footer.peppol">Peppol Info</a>
+                    <a href="/partners" data-i18n="footer.partners">Partners</a>
+                </div>
+                <div class="footer-column">
+                    <h4 data-i18n="footer.legal">Legal</h4>
+                    <a href="/privacy" data-i18n="footer.privacy">Privacy Policy</a>
+                    <a href="/terms" data-i18n="footer.terms">Terms of Service</a>
+                    <a href="/gdpr" data-i18n="footer.gdpr">GDPR</a>
+                    <a href="/cookies" data-i18n="footer.cookies">Cookie Policy</a>
+                </div>
+            </div>
+
+            <div class="footer-social">
+                <a href="https://twitter.com/moneyworkdesk" target="_blank" aria-label="Twitter">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+                    </svg>
+                </a>
+                <a href="https://linkedin.com/company/moneyworkdesk" target="_blank" aria-label="LinkedIn">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/>
+                        <circle cx="4" cy="4" r="2"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer-brand">
+            <p>&copy; @DateTime.Now.Year MoneyWorkdesk. <span data-i18n="footer.rights">All rights reserved.</span></p>
+        </div>
+    </footer>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    private bool isDarkMode = false;
+    private string currentLang = "en";
+    private bool showLangDropdown = false;
+    private bool showMobileMenu = false;
+    private string themeClass => isDarkMode ? "theme-dark" : "theme-light";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Load theme from localStorage
+            var theme = await JS.InvokeAsync<string>("localStorage.getItem", "moneyworkdesk_theme");
+            isDarkMode = theme == "dark";
+
+            // Load language from localStorage
+            var lang = await JS.InvokeAsync<string>("localStorage.getItem", "moneyworkdesk_lang");
+            if (!string.IsNullOrEmpty(lang))
+            {
+                currentLang = lang;
+            }
+
+            StateHasChanged();
+
+            // Initialize i18n
+            await JS.InvokeVoidAsync("eval", "if (window.i18n) { window.i18n.init(); }");
+        }
+    }
+
+    private async Task ToggleTheme()
+    {
+        isDarkMode = !isDarkMode;
+        var theme = isDarkMode ? "dark" : "light";
+        await JS.InvokeVoidAsync("localStorage.setItem", "moneyworkdesk_theme", theme);
+    }
+
+    private void ToggleLanguageDropdown()
+    {
+        showLangDropdown = !showLangDropdown;
+    }
+
+    private async Task ChangeLanguage(string lang)
+    {
+        currentLang = lang;
+        showLangDropdown = false;
+        await JS.InvokeVoidAsync("localStorage.setItem", "moneyworkdesk_lang", lang);
+        await JS.InvokeVoidAsync("eval", $"if (window.i18n) {{ window.i18n.setLanguage('{lang}'); }}");
+    }
+
+    private void ToggleMobileMenu()
+    {
+        showMobileMenu = !showMobileMenu;
+    }
+
+    private void CloseMobileMenu()
+    {
+        showMobileMenu = false;
+    }
+}

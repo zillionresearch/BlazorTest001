@@ -1,0 +1,294 @@
+@page "/"
+@inject IJSRuntime JS
+
+<PageTitle>MoneyWorkdesk - Smart Money Operations for Europe</PageTitle>
+
+<!-- Hero Slider -->
+<section class="hero-slider">
+    <div class="slider-container">
+        <!-- Slide 1: Main Hero -->
+        <div class="slide active">
+            <div class="slide-content">
+                <h1 class="hero-title" data-i18n="hero.title">
+                    Smart Money Operations<br>for <span class="gradient-text">European Business</span>
+                </h1>
+                <p class="hero-subtitle" data-i18n="hero.subtitle">
+                    Invoicing, expenses, cash flow & payments. Beautifully simple. Peppol-ready. Built for Belgium, France, Germany & beyond.
+                </p>
+                <div class="hero-actions">
+                    <a href="/register" class="btn btn-primary btn-lg" data-i18n="hero.cta">Start Free Trial</a>
+                    <a href="#features" class="btn btn-secondary btn-lg" data-i18n="hero.learn">Learn More</a>
+                </div>
+                <div class="hero-badges">
+                    <span class="badge">🇪🇺 Peppol Ready</span>
+                    <span class="badge">✨ Free Forever Plan</span>
+                    <span class="badge">🔒 Bank-Level Security</span>
+                </div>
+            </div>
+            <div class="slide-image">
+                <div class="dashboard-preview">
+                    <!-- Mockup dashboard -->
+                    <div class="preview-card">
+                        <div class="preview-header">
+                            <div class="preview-dot"></div>
+                            <div class="preview-dot"></div>
+                            <div class="preview-dot"></div>
+                        </div>
+                        <div class="preview-content">
+                            <div class="preview-metric">
+                                <span class="metric-label" data-i18n="preview.revenue">Revenue</span>
+                                <span class="metric-value">€28,450</span>
+                            </div>
+                            <div class="preview-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Free Consultation -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1 class="hero-title" data-i18n="hero.consult.title">
+                    Get a <span class="gradient-text">Free Consultation</span>
+                </h1>
+                <p class="hero-subtitle" data-i18n="hero.consult.subtitle">
+                    Not sure where to start? Book a free 30-minute consultation with our money operations experts. We'll help you streamline your workflows.
+                </p>
+                <div class="hero-actions">
+                    <a href="/contact?consultation=true" class="btn btn-primary btn-lg" data-i18n="hero.consult.cta">Book Free Consultation</a>
+                </div>
+                <div class="hero-badges">
+                    <span class="badge">📅 30 Minutes</span>
+                    <span class="badge">💡 Expert Advice</span>
+                    <span class="badge">🎁 100% Free</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Peppol Power -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1 class="hero-title" data-i18n="hero.peppol.title">
+                    <span class="gradient-text">Peppol-Ready</span> from Day One
+                </h1>
+                <p class="hero-subtitle" data-i18n="hero.peppol.subtitle">
+                    Send & receive invoices through the European Peppol network. Automatic setup. Instant delivery. Government-compliant.
+                </p>
+                <div class="hero-actions">
+                    <a href="#features" class="btn btn-primary btn-lg" data-i18n="hero.peppol.cta">Discover Peppol</a>
+                </div>
+                <div class="hero-badges">
+                    <span class="badge">🇪🇺 EU Standard</span>
+                    <span class="badge">⚡ Instant Delivery</span>
+                    <span class="badge">✅ Auto Compliance</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Beautiful & Simple -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1 class="hero-title" data-i18n="hero.simple.title">
+                    Powerful Features.<br><span class="gradient-text">Beautifully Simple.</span>
+                </h1>
+                <p class="hero-subtitle" data-i18n="hero.simple.subtitle">
+                    Custom invoice layouts. Your logo. Your colors. Automated follow-ups. Payment tracking. Everything you need, nothing you don't.
+                </p>
+                <div class="hero-actions">
+                    <a href="/register" class="btn btn-primary btn-lg" data-i18n="hero.simple.cta">Try It Free</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slider Controls -->
+    <div class="slider-controls">
+        <button class="slider-btn prev-btn" id="prevSlide">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </button>
+        <div class="slider-dots" id="sliderDots"></div>
+        <button class="slider-btn next-btn" id="nextSlide">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </button>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title" data-i18n="features.title">Everything You Need to Run Your Business</h2>
+            <p class="section-subtitle" data-i18n="features.subtitle">Built specifically for European businesses with local compliance in mind</p>
+        </div>
+
+        <div class="features-grid">
+            <!-- Feature 1: Peppol -->
+            <div class="feature-card glass-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0-4.97-4.03-9-9-9s-9 4.03-9 9c0 4.97 4.03 9 9 9s9-4.03 9-9z"/>
+                        <path d="M21 10c0-4.97 4.03-9 9-9"/>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.peppol.title">Peppol Network Ready</h3>
+                <p data-i18n="features.peppol.desc">Automatic setup for EU-wide invoice exchange. Send to government & large enterprises instantly.</p>
+            </div>
+
+            <!-- Feature 2: Custom Branding -->
+            <div class="feature-card glass-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="26" height="26" rx="3"/>
+                        <path d="M9 9h12M9 15h12M9 21h8"/>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.branding.title">Custom Invoice Layouts</h3>
+                <p data-i18n="features.branding.desc">Upload your logo, choose your colors, customize layouts. Make invoices truly yours.</p>
+            </div>
+
+            <!-- Feature 3: Multi-Currency -->
+            <div class="feature-card glass-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="16" y1="2" x2="16" y2="30"/>
+                        <path d="M23 6H11.5a5.5 5.5 0 0 0 0 11h9a5.5 5.5 0 0 1 0 11H9"/>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.currency.title">Multi-Currency Support</h3>
+                <p data-i18n="features.currency.desc">Invoice in EUR, GBP, USD, CHF and more. Automatic exchange rates included.</p>
+            </div>
+
+            <!-- Feature 4: Automated Follow-ups -->
+            <div class="feature-card glass-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.followup.title">Automated Follow-ups</h3>
+                <p data-i18n="features.followup.desc">Smart email reminders sent automatically. Never chase late payments manually again.</p>
+            </div>
+
+            <!-- Feature 5: Payment Tracking -->
+            <div class="feature-card glass-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="8" width="28" height="18" rx="2"/>
+                        <path d="M2 13h28"/>
+                        <circle cx="10" cy="19" r="2"/>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.payments.title">Payment Tracking</h3>
+                <p data-i18n="features.payments.desc">Stripe, Mollie, bank transfers. Track every payment in one beautiful dashboard.</p>
+            </div>
+
+            <!-- Feature 6: Cash Flow -->
+            <div class="feature-card glass-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="29 15 29 5 19 5"/>
+                        <path d="M29 5L15 19"/>
+                        <polyline points="15 19 5 29"/>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.cashflow.title">Cash Flow Dashboard</h3>
+                <p data-i18n="features.cashflow.desc">See your financial future. 30-60-90 day projections with real-time updates.</p>
+            </div>
+
+            <!-- Feature 7: Expense Management -->
+            <div class="feature-card glass-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="4" y="6" width="24" height="20" rx="2"/>
+                        <path d="M10 14h0M16 14h0"/>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.expenses.title">Expense Management</h3>
+                <p data-i18n="features.expenses.desc">Track bills, categorize expenses, export for your accountant. All in one place.</p>
+            </div>
+
+            <!-- Feature 8: Reports & Analytics -->
+            <div class="feature-card glass-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 5v22h22"/>
+                        <path d="M27 13l-7 7-6-6-9 9"/>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.reports.title">Smart Reports</h3>
+                <p data-i18n="features.reports.desc">VAT reports, P&L, revenue breakdowns. Export to Excel or share with your accountant.</p>
+            </div>
+
+            <!-- Feature 9: Mobile Ready -->
+            <div class="feature-card glass-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="2" width="14" height="28" rx="2"/>
+                        <path d="M16 24h0"/>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.mobile.title">Works Everywhere</h3>
+                <p data-i18n="features.mobile.desc">Desktop, tablet, phone. Your business data accessible anytime, anywhere.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trust Section -->
+<section class="trust-section">
+    <div class="container">
+        <h2 class="section-title" data-i18n="trust.title">Trusted by European Businesses</h2>
+        <div class="trust-stats">
+            <div class="stat glass-card">
+                <div class="stat-value">€2.4M+</div>
+                <div class="stat-label" data-i18n="trust.processed">Invoices Processed</div>
+            </div>
+            <div class="stat glass-card">
+                <div class="stat-value">1,200+</div>
+                <div class="stat-label" data-i18n="trust.businesses">Active Businesses</div>
+            </div>
+            <div class="stat glass-card">
+                <div class="stat-value">99.9%</div>
+                <div class="stat-label" data-i18n="trust.uptime">Uptime</div>
+            </div>
+            <div class="stat glass-card">
+                <div class="stat-value">4.9/5</div>
+                <div class="stat-label" data-i18n="trust.rating">Customer Rating</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-card glass-card">
+            <h2 data-i18n="cta.title">Ready to simplify your money operations?</h2>
+            <p data-i18n="cta.subtitle">Start free. No credit card required. Cancel anytime.</p>
+            <div class="cta-actions">
+                <a href="/register" class="btn btn-primary btn-lg" data-i18n="cta.start">Start Free Trial</a>
+                <a href="/contact" class="btn btn-secondary btn-lg" data-i18n="cta.demo">Book a Demo</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize hero slider
+            await JS.InvokeVoidAsync("eval", @"
+                if (typeof HeroSlider !== 'undefined') {
+                    new HeroSlider();
+                }
+            ");
+        }
+    }
+}

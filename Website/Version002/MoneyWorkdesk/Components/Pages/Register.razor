@@ -1,0 +1,236 @@
+@page "/register"
+@using MoneyWorkdesk.Services
+@inject LanguageService LangService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@implements IDisposable
+@rendermode InteractiveServer
+
+<PageTitle>@LangService.Translate("register.pageTitle") - MoneyWorkdesk</PageTitle>
+
+<div class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Logo -->
+            <div class="auth-logo">
+                <svg width="60" height="60" viewBox="0 0 40 40" fill="none">
+                    <rect width="40" height="40" rx="10" fill="url(#logo-gradient-register)"/>
+                    <path d="M12 15L20 10L28 15V25L20 30L12 25V15Z" stroke="white" stroke-width="2.5"/>
+                    <path d="M20 20V30" stroke="white" stroke-width="2.5"/>
+                    <defs>
+                        <linearGradient id="logo-gradient-register" x1="0" y1="0" x2="40" y2="40">
+                            <stop offset="0%" stop-color="#0066FF"/>
+                            <stop offset="100%" stop-color="#7C3AED"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <h1>MoneyWorkdesk</h1>
+            </div>
+
+            <!-- Title -->
+            <div class="auth-header">
+                <h2>@LangService.Translate("register.title")</h2>
+                <p>@LangService.Translate("register.subtitle")</p>
+            </div>
+
+            <!-- Social Signup Buttons -->
+            <div class="social-login">
+                <button class="btn-social" @onclick="@(() => RegisterWithProvider("Google"))">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    @LangService.Translate("register.continueWithGoogle")
+                </button>
+
+                <button class="btn-social" @onclick="@(() => RegisterWithProvider("Microsoft"))">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="#f25022" d="M1 1h10v10H1z"/>
+                        <path fill="#00a4ef" d="M13 1h10v10H13z"/>
+                        <path fill="#7fba00" d="M1 13h10v10H1z"/>
+                        <path fill="#ffb900" d="M13 13h10v10H13z"/>
+                    </svg>
+                    @LangService.Translate("register.continueWithMicrosoft")
+                </button>
+            </div>
+
+            <!-- Divider -->
+            <div class="auth-divider">
+                <span>@LangService.Translate("register.orContinueWith")</span>
+            </div>
+
+            <!-- Registration Form -->
+            <form class="auth-form" @onsubmit="HandleRegister">
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-error">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="10" cy="10" r="8"/>
+                            <path d="M10 6v4M10 14h.01"/>
+                        </svg>
+                        @errorMessage
+                    </div>
+                }
+
+                <div class="form-group">
+                    <label for="fullName">@LangService.Translate("register.fullName")</label>
+                    <input
+                        type="text"
+                        id="fullName"
+                        class="form-input"
+                        @bind="fullName"
+                        placeholder="@LangService.Translate("register.fullNamePlaceholder")"
+                        required />
+                </div>
+
+                <div class="form-group">
+                    <label for="email">@LangService.Translate("register.email")</label>
+                    <input
+                        type="email"
+                        id="email"
+                        class="form-input"
+                        @bind="email"
+                        placeholder="@LangService.Translate("register.emailPlaceholder")"
+                        required />
+                </div>
+
+                <div class="form-group">
+                    <label for="company">@LangService.Translate("register.company")</label>
+                    <input
+                        type="text"
+                        id="company"
+                        class="form-input"
+                        @bind="company"
+                        placeholder="@LangService.Translate("register.companyPlaceholder")" />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">@LangService.Translate("register.password")</label>
+                    <input
+                        type="password"
+                        id="password"
+                        class="form-input"
+                        @bind="password"
+                        placeholder="@LangService.Translate("register.passwordPlaceholder")"
+                        required />
+                    <small class="form-hint">@LangService.Translate("register.passwordHint")</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">@LangService.Translate("register.confirmPassword")</label>
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        class="form-input"
+                        @bind="confirmPassword"
+                        placeholder="@LangService.Translate("register.confirmPasswordPlaceholder")"
+                        required />
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" @bind="acceptTerms" required />
+                        <span>
+                            @LangService.Translate("register.acceptTermsPrefix")
+                            <a href="/terms" class="link-text" target="_blank">@LangService.Translate("register.termsLink")</a>
+                            @LangService.Translate("register.and")
+                            <a href="/privacy" class="link-text" target="_blank">@LangService.Translate("register.privacyLink")</a>
+                        </span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-full" disabled="@isLoading">
+                    @if (isLoading)
+                    {
+                        <span class="spinner"></span>
+                        @LangService.Translate("register.creating")
+                    }
+                    else
+                    {
+                        @LangService.Translate("register.createButton")
+                    }
+                </button>
+            </form>
+
+            <!-- Login Link -->
+            <div class="auth-footer">
+                <p>
+                    @LangService.Translate("register.haveAccount")
+                    <a href="/login" class="link-primary">@LangService.Translate("register.login")</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string fullName = "";
+    private string email = "";
+    private string company = "";
+    private string password = "";
+    private string confirmPassword = "";
+    private bool acceptTerms = false;
+    private bool isLoading = false;
+    private string errorMessage = "";
+
+    protected override void OnInitialized()
+    {
+        LangService.OnLanguageChanged += LanguageChanged;
+    }
+
+    private void LanguageChanged()
+    {
+        StateHasChanged();
+    }
+
+    private async Task HandleRegister()
+    {
+        isLoading = true;
+        errorMessage = "";
+        StateHasChanged();
+
+        // Check password match on client side first
+        if (password != confirmPassword)
+        {
+            errorMessage = LangService.Translate("register.errorPasswordMismatch");
+            isLoading = false;
+            StateHasChanged();
+            return;
+        }
+
+        var request = new RegisterRequest
+        {
+            FullName = fullName,
+            Email = email,
+            Company = company,
+            Password = password,
+            AcceptTerms = acceptTerms
+        };
+
+        var result = await AuthService.RegisterAsync(request);
+
+        if (result.Success)
+        {
+            // Success - redirect to dashboard
+            Navigation.NavigateTo("/", true);
+        }
+        else
+        {
+            errorMessage = result.ErrorMessage ?? LangService.Translate("register.errorInvalid");
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RegisterWithProvider(string provider)
+    {
+        await AuthService.LoginWithProviderAsync(provider);
+    }
+
+    public void Dispose()
+    {
+        LangService.OnLanguageChanged -= LanguageChanged;
+    }
+}

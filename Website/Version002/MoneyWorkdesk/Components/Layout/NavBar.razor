@@ -1,0 +1,156 @@
+@inject IJSRuntime JS
+@inject MoneyWorkdesk.Services.LanguageService LangService
+@rendermode InteractiveServer
+
+<!-- Static Top Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-container">
+        <!-- Logo -->
+        <div class="nav-logo">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect width="40" height="40" rx="10" fill="url(#logo-gradient)"/>
+                <path d="M12 15L20 10L28 15V25L20 30L12 25V15Z" stroke="white" stroke-width="2.5"/>
+                <path d="M20 20V30" stroke="white" stroke-width="2.5"/>
+                <defs>
+                    <linearGradient id="logo-gradient" x1="0" y1="0" x2="40" y2="40">
+                        <stop offset="0%" stop-color="#0066FF"/>
+                        <stop offset="100%" stop-color="#7C3AED"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <span class="brand-name">MoneyWorkdesk</span>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="nav-links">
+            <a href="#features" @onclick="@(() => ScrollToSection("features"))" @onclick:preventDefault="true">@LangService.Translate("nav.features")</a>
+            <a href="#features" @onclick="@(() => ScrollToSection("features"))" @onclick:preventDefault="true">@LangService.Translate("nav.pricing")</a>
+            <a href="#about" @onclick="@(() => ScrollToSection("about"))" @onclick:preventDefault="true">@LangService.Translate("nav.about")</a>
+            <a href="#contact" @onclick="@(() => ScrollToSection("contact"))" @onclick:preventDefault="true">@LangService.Translate("nav.contact")</a>
+        </div>
+
+        <!-- Right Side Actions -->
+        <div class="nav-actions">
+            <!-- Language Selector -->
+            <div class="language-selector">
+                <button class="lang-button" @onclick="ToggleLanguageDropdown">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="10" cy="10" r="8"/>
+                        <path d="M2 10h16M10 2a15.3 15.3 0 0 1 4 8 15.3 15.3 0 0 1-4 8 15.3 15.3 0 0 1-4-8 15.3 15.3 0 0 1 4-8z"/>
+                    </svg>
+                    <span>@currentLanguage.ToUpper()</span>
+                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 12 12" class="chevron">
+                        <path d="M2 4l4 4 4-4"/>
+                    </svg>
+                </button>
+                @if (showLanguageDropdown)
+                {
+                    <div class="lang-dropdown">
+                        <button @onclick='() => ChangeLanguage("en")'>🇬🇧 English</button>
+                        <button @onclick='() => ChangeLanguage("nl-be")'>🇧🇪 Nederlands (BE)</button>
+                        <button @onclick='() => ChangeLanguage("nl")'>🇳🇱 Nederlands (NL)</button>
+                        <button @onclick='() => ChangeLanguage("fr")'>🇫🇷 Français</button>
+                        <button @onclick='() => ChangeLanguage("de")'>🇩🇪 Deutsch</button>
+                        <button @onclick='() => ChangeLanguage("es")'>🇪🇸 Español</button>
+                    </div>
+                }
+            </div>
+
+            <!-- Theme Toggle -->
+            <button class="theme-toggle" @onclick="ToggleTheme" title="Toggle dark mode">
+                @if (isDarkMode)
+                {
+                    <!-- Moon Icon -->
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                }
+                else
+                {
+                    <!-- Sun Icon -->
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="10" cy="10" r="4"/>
+                        <path d="M10 2v2M10 16v2M18 10h-2M6 10H4M15.07 4.93l-1.41 1.41M6.34 13.66L4.93 15.07M15.07 15.07l-1.41-1.41M6.34 6.34L4.93 4.93"/>
+                    </svg>
+                }
+            </button>
+
+            <!-- Login/Register Buttons -->
+            <a href="/login" class="btn btn-secondary">@LangService.Translate("nav.login")</a>
+            <a href="/register" class="btn btn-primary">@LangService.Translate("nav.getStarted")</a>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private bool isDarkMode = false;
+    private string currentLanguage = "en";
+    private bool showLanguageDropdown = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Load theme preference
+            var savedTheme = await JS.InvokeAsync<string?>("localStorage.getItem", "theme");
+            if (savedTheme == "dark")
+            {
+                isDarkMode = true;
+                StateHasChanged();
+                await ApplyTheme();
+            }
+
+            // Load language preference
+            var savedLang = await JS.InvokeAsync<string?>("localStorage.getItem", "language");
+            if (!string.IsNullOrEmpty(savedLang))
+            {
+                currentLanguage = savedLang;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task ToggleTheme()
+    {
+        isDarkMode = !isDarkMode;
+        var theme = isDarkMode ? "dark" : "light";
+        await JS.InvokeVoidAsync("localStorage.setItem", "theme", theme);
+        await ApplyTheme();
+    }
+
+    private async Task ApplyTheme()
+    {
+        var themeClass = isDarkMode ? "theme-dark" : "theme-light";
+        await JS.InvokeVoidAsync("eval", $@"
+            var wrapper = document.getElementById('theme-wrapper');
+            if (wrapper) {{
+                wrapper.className = '{themeClass}';
+            }}
+        ");
+    }
+
+    private void ToggleLanguageDropdown()
+    {
+        showLanguageDropdown = !showLanguageDropdown;
+    }
+
+    private async Task ChangeLanguage(string lang)
+    {
+        currentLanguage = lang;
+        showLanguageDropdown = false;
+        await JS.InvokeVoidAsync("localStorage.setItem", "language", lang);
+
+        // Update the language service which will notify all subscribers
+        LangService.CurrentLanguage = lang;
+    }
+
+    private async Task ScrollToSection(string sectionId)
+    {
+        await JS.InvokeVoidAsync("eval", $@"
+            var element = document.getElementById('{sectionId}');
+            if (element) {{
+                element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+            }}
+        ");
+    }
+}

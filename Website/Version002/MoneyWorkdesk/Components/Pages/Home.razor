@@ -1,0 +1,328 @@
+@page "/"
+@inject IJSRuntime JS
+@inject MoneyWorkdesk.Services.LanguageService LangService
+@implements IDisposable
+@rendermode InteractiveServer
+
+<PageTitle>MoneyWorkdesk - Smart Money Operations for Europe</PageTitle>
+
+<!-- Hero Slider Section -->
+<section class="hero-slider">
+    <div class="slider-wrapper">
+        @foreach (var (slide, index) in slides.Select((s, i) => (s, i)))
+        {
+            <div class="slide @(index == currentSlide ? "active" : "")">
+                <div class="slide-content">
+                    <h1>@((MarkupString)slide.Title)</h1>
+                    <p>@slide.Subtitle</p>
+                    <div class="hero-buttons">
+                        <a href="@slide.PrimaryLink" class="btn btn-primary btn-lg">@slide.PrimaryText</a>
+                        @if (!string.IsNullOrEmpty(slide.SecondaryLink))
+                        {
+                            <a href="@slide.SecondaryLink" class="btn btn-secondary btn-lg">@slide.SecondaryText</a>
+                        }
+                    </div>
+                    <div class="hero-badges">
+                        @foreach (var badge in slide.Badges)
+                        {
+                            <span class="badge">@badge</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Slider Controls -->
+    <div class="slider-controls">
+        <button class="slider-arrow prev" @onclick="PreviousSlide">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </button>
+        <div class="slider-dots">
+            @for (int i = 0; i < slides.Count; i++)
+            {
+                int index = i;
+                <button class="dot @(index == currentSlide ? "active" : "")" @onclick="() => GoToSlide(index)"></button>
+            }
+        </div>
+        <button class="slider-arrow next" @onclick="NextSlide">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </button>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+    <div class="container">
+        <div class="section-header">
+            <h2>@LangService.Translate("features.title")</h2>
+            <p>@LangService.Translate("features.subtitle")</p>
+        </div>
+
+        <div class="features-grid">
+            @foreach (var feature in features)
+            {
+                <div class="feature-card">
+                    <div class="feature-icon">@((MarkupString)feature.Icon)</div>
+                    <h3>@feature.Title</h3>
+                    <p>@feature.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section" id="about">
+    <div class="container">
+        <div class="section-header">
+            <h2>@LangService.Translate("testimonials.title")</h2>
+            <p>@LangService.Translate("testimonials.subtitle")</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">€2.4M+</div>
+                <div class="stat-label">Invoices Processed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">1,200+</div>
+                <div class="stat-label">Active Businesses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">99.9%</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">4.9/5</div>
+                <div class="stat-label">Customer Rating</div>
+            </div>
+        </div>
+
+        <div class="testimonials-grid">
+            @foreach (var testimonial in testimonials)
+            {
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"@testimonial.Quote"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">@testimonial.Name.Substring(0, 1)</div>
+                        <div class="author-info">
+                            <div class="author-name">@testimonial.Name</div>
+                            <div class="author-role">@testimonial.Role, @testimonial.Company</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section" id="contact">
+    <div class="container">
+        <div class="cta-card">
+            <h2>Ready to simplify your money operations?</h2>
+            <p>Start free. No credit card required. Cancel anytime.</p>
+            <div class="cta-buttons">
+                <a href="/register" class="btn btn-primary btn-lg">Start Free Trial</a>
+                <a href="/contact" class="btn btn-secondary btn-lg">Book a Demo</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private int currentSlide = 0;
+    private System.Threading.Timer? sliderTimer;
+
+    private class HeroSlide
+    {
+        public string Title { get; set; } = "";
+        public string Subtitle { get; set; } = "";
+        public string PrimaryLink { get; set; } = "";
+        public string PrimaryText { get; set; } = "";
+        public string? SecondaryLink { get; set; }
+        public string? SecondaryText { get; set; }
+        public List<string> Badges { get; set; } = new();
+    }
+
+    private class Feature
+    {
+        public string Icon { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
+    }
+
+    private class Testimonial
+    {
+        public string Quote { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Role { get; set; } = "";
+        public string Company { get; set; } = "";
+    }
+
+    private List<HeroSlide> slides = new();
+
+    private List<Feature> features = new()
+    {
+        new Feature
+        {
+            Icon = "<svg width='32' height='32' fill='none' stroke='currentColor' stroke-width='2'><circle cx='16' cy='16' r='14'/><path d='M2 16h28'/></svg>",
+            Title = "Peppol Network Ready",
+            Description = "Automatic setup for EU-wide invoice exchange. Send to government & large enterprises instantly."
+        },
+        new Feature
+        {
+            Icon = "<svg width='32' height='32' fill='none' stroke='currentColor' stroke-width='2'><rect x='4' y='4' width='24' height='24' rx='3'/><path d='M10 10h12M10 16h12M10 22h8'/></svg>",
+            Title = "Custom Invoice Layouts",
+            Description = "Upload your logo, choose your colors, customize layouts. Make invoices truly yours."
+        },
+        new Feature
+        {
+            Icon = "<svg width='32' height='32' fill='none' stroke='currentColor' stroke-width='2'><line x1='16' y1='4' x2='16' y2='28'/><path d='M22 8H12a5 5 0 0 0 0 10h8a5 5 0 0 1 0 10H10'/></svg>",
+            Title = "Multi-Currency Support",
+            Description = "Invoice in EUR, GBP, USD, CHF and more. Automatic exchange rates included."
+        },
+        new Feature
+        {
+            Icon = "<svg width='32' height='32' fill='none' stroke='currentColor' stroke-width='2'><path d='M26 4L14 16M26 4l-8 22-4-10-10-4 22-8z'/></svg>",
+            Title = "Automated Follow-ups",
+            Description = "Smart email reminders sent automatically. Never chase late payments manually again."
+        },
+        new Feature
+        {
+            Icon = "<svg width='32' height='32' fill='none' stroke='currentColor' stroke-width='2'><rect x='4' y='10' width='24' height='16' rx='2'/><path d='M4 16h24'/></svg>",
+            Title = "Payment Tracking",
+            Description = "Stripe, Mollie, bank transfers. Track every payment in one beautiful dashboard."
+        },
+        new Feature
+        {
+            Icon = "<svg width='32' height='32' fill='none' stroke='currentColor' stroke-width='2'><path d='M4 4v24h24'/><path d='M26 14l-6 6-6-6-10 10'/></svg>",
+            Title = "Cash Flow Dashboard",
+            Description = "See your financial future. 30-60-90 day projections with real-time updates."
+        }
+    };
+
+    private List<Testimonial> testimonials = new()
+    {
+        new Testimonial
+        {
+            Quote = "MoneyWorkdesk transformed our invoicing process. The Peppol integration alone saved us 10 hours per week.",
+            Name = "Sophie Durant",
+            Role = "CFO",
+            Company = "TechStart Belgium"
+        },
+        new Testimonial
+        {
+            Quote = "Finally, an invoicing solution that understands European business. Multi-currency support is flawless.",
+            Name = "Lars Müller",
+            Role = "Founder",
+            Company = "DesignStudio GmbH"
+        },
+        new Testimonial
+        {
+            Quote = "The automated payment reminders and cash flow forecasting give us complete control over our finances.",
+            Name = "Marie Leclerc",
+            Role = "Operations Director",
+            Company = "Artisan & Co"
+        }
+    };
+
+    protected override void OnInitialized()
+    {
+        // Auto-advance slider every 5 seconds
+        sliderTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                NextSlide();
+                StateHasChanged();
+            });
+        }, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
+
+        // Subscribe to language changes
+        LangService.OnLanguageChanged += LanguageChanged;
+
+        // Load initial slides with current language
+        LoadSlides();
+    }
+
+    private void LanguageChanged()
+    {
+        LoadSlides();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void LoadSlides()
+    {
+        slides = new List<HeroSlide>
+        {
+            new HeroSlide
+            {
+                Title = LangService.Translate("hero.slide1.title"),
+                Subtitle = LangService.Translate("hero.slide1.subtitle"),
+                PrimaryLink = "/register",
+                PrimaryText = LangService.Translate("hero.slide1.cta"),
+                SecondaryLink = "#features",
+                SecondaryText = LangService.Translate("hero.slide1.learn"),
+                Badges = new() { "🇪🇺 Peppol Ready", "✨ Free Forever Plan", "🔒 Bank-Level Security" }
+            },
+            new HeroSlide
+            {
+                Title = LangService.Translate("hero.slide2.title"),
+                Subtitle = LangService.Translate("hero.slide2.subtitle"),
+                PrimaryLink = "https://calendly.com/moneyworkdesk/15min",
+                PrimaryText = LangService.Translate("hero.slide2.cta"),
+                Badges = new()
+                {
+                    LangService.Translate("hero.slide2.email"),
+                    LangService.Translate("hero.slide2.phone"),
+                    "📅 15 Minutes • 💡 Expert Advice • 🎁 100% Free"
+                }
+            },
+            new HeroSlide
+            {
+                Title = LangService.Translate("hero.slide3.title"),
+                Subtitle = LangService.Translate("hero.slide3.subtitle"),
+                PrimaryLink = "#features",
+                PrimaryText = LangService.Translate("hero.slide3.cta"),
+                Badges = new() { "🇪🇺 EU Standard", "⚡ Instant Delivery", "✅ Auto Compliance" }
+            },
+            new HeroSlide
+            {
+                Title = LangService.Translate("hero.slide4.title"),
+                Subtitle = LangService.Translate("hero.slide4.subtitle"),
+                PrimaryLink = "/register",
+                PrimaryText = LangService.Translate("hero.slide4.cta"),
+                Badges = new() { "🎨 Custom Branding", "🤖 Automation", "📊 Smart Reports" }
+            }
+        };
+    }
+
+    private void NextSlide()
+    {
+        currentSlide = (currentSlide + 1) % slides.Count;
+    }
+
+    private void PreviousSlide()
+    {
+        currentSlide = currentSlide == 0 ? slides.Count - 1 : currentSlide - 1;
+    }
+
+    private void GoToSlide(int index)
+    {
+        currentSlide = index;
+    }
+
+    public void Dispose()
+    {
+        sliderTimer?.Dispose();
+        LangService.OnLanguageChanged -= LanguageChanged;
+    }
+}
