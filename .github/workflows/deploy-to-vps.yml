@@ -64,9 +64,10 @@ jobs:
       run: |
         Write-Host "=== Deployment Summary ===" -ForegroundColor Cyan
         Write-Host "Deployed to: C:\Websites1\BlazorTest001" -ForegroundColor Green
-        Write-Host "Website URL: http://test.moneyworkdesk.com" -ForegroundColor Green
+        Write-Host "Production URLs:" -ForegroundColor Green
+        Write-Host "  - https://www.moneyworkdesk.com" -ForegroundColor White
+        Write-Host "  - https://moneyworkdesk.com" -ForegroundColor White
         Write-Host "App Pool: BlazorTest001" -ForegroundColor Green
         Write-Host ""
-        Write-Host "Verify site is running:" -ForegroundColor Yellow
-        Write-Host "  curl http://test.moneyworkdesk.com" -ForegroundColor Gray
+        Write-Host "Note: Cloudflare handles HTTPS" -ForegroundColor Gray
       shell: powershell

@@ -9,7 +9,6 @@ Invoke-Command -ComputerName 107.175.88.36 -Credential $cred -ScriptBlock {
     $siteName = "BlazorTest001"
     $appPoolName = "BlazorTest001"
     $physicalPath = "C:\Websites1\BlazorTest001"
-    $hostHeader = "test.moneyworkdesk.com"
     $port = 80  # Standard HTTP port (Cloudflare will handle HTTPS)
 
     Write-Host "=== Step 1: Create App Pool ===" -ForegroundColor Cyan
@@ -39,15 +38,19 @@ Invoke-Command -ComputerName 107.175.88.36 -Credential $cred -ScriptBlock {
         Remove-Website -Name $siteName
     }
 
-    # Create website with host header
+    # Create website with primary host header (www)
     New-Website -Name $siteName `
         -PhysicalPath $physicalPath `
         -ApplicationPool $appPoolName `
         -Port $port `
-        -HostHeader $hostHeader `
+        -HostHeader "www.moneyworkdesk.com" `
         -Force
 
-    Write-Host "Website created: $siteName (http://$hostHeader)" -ForegroundColor Green
+    Write-Host "Website created: $siteName" -ForegroundColor Green
+
+    # Add apex domain binding
+    New-WebBinding -Name $siteName -Protocol "http" -Port $port -HostHeader "moneyworkdesk.com"
+    Write-Host "Added bindings: http://www.moneyworkdesk.com and http://moneyworkdesk.com" -ForegroundColor Green
 
     # Configure website
     Set-ItemProperty "IIS:\Sites\$siteName" -Name "preloadEnabled" -Value $true
@@ -72,7 +75,9 @@ Invoke-Command -ComputerName 107.175.88.36 -Credential $cred -ScriptBlock {
     Write-Host "Physical Path: $physicalPath" -ForegroundColor White
 
     Write-Host "`n=== Configuration Complete! ===" -ForegroundColor Green
-    Write-Host "Website URL: http://$hostHeader" -ForegroundColor Cyan
+    Write-Host "Production URLs:" -ForegroundColor Cyan
+    Write-Host "  - https://www.moneyworkdesk.com" -ForegroundColor White
+    Write-Host "  - https://moneyworkdesk.com" -ForegroundColor White
     Write-Host "Note: Site is empty until first deployment" -ForegroundColor Yellow
-    Write-Host "Note: Configure DNS to point $hostHeader to 107.175.88.36" -ForegroundColor Yellow
+    Write-Host "Note: Cloudflare handles HTTPS and DNS" -ForegroundColor Yellow
 }
