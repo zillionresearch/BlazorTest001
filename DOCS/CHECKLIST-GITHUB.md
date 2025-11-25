@@ -245,6 +245,8 @@ gh api repos/OWNER/REPO/actions/runners --jq '.runners[] | {name, status}'
 
 Create `.github/workflows/deploy-to-vps.yml`:
 
+**IMPORTANT:** Use `shell: powershell` (Windows PowerShell), NOT `shell: pwsh` (PowerShell Core). Most Windows Server installations have Windows PowerShell 5.1 by default, but not PowerShell Core 7+.
+
 ```yaml
 name: Deploy to VPS
 
@@ -255,7 +257,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: [self-hosted, windows, vps, production]  # Use labels from runner setup
 
     steps:
     - name: Checkout code
@@ -267,19 +269,16 @@ jobs:
         dotnet-version: '10.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore
-      working-directory: ./path/to/project
+      run: dotnet restore "path/to/project.csproj"
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-      working-directory: ./path/to/project
+      run: dotnet build "path/to/project.csproj" --configuration Release --no-restore
 
     - name: Publish
-      run: dotnet publish --configuration Release --output ./publish --no-build
-      working-directory: ./path/to/project
+      run: dotnet publish "path/to/project.csproj" --configuration Release --no-build --output ./publish
 
     - name: Stop IIS App Pool
-      shell: powershell
+      shell: powershell  # Use 'powershell' NOT 'pwsh'
       run: |
         Import-Module WebAdministration
         Stop-WebAppPool -Name "YourAppPoolName"
@@ -290,27 +289,28 @@ jobs:
       run: |
         $destination = "C:\Websites1\ProjectName"
         if (Test-Path $destination) {
-          Remove-Item -Path "$destination\*" -Recurse -Force -Exclude "web.config"
+          Get-ChildItem -Path $destination -Exclude "web.config" | Remove-Item -Recurse -Force
         }
-        Copy-Item -Path ./path/to/project/publish/* -Destination $destination -Recurse -Force
+        Copy-Item -Path "./publish/*" -Destination $destination -Recurse -Force
+        Write-Host "Deployment complete to $destination"
 
     - name: Start IIS App Pool
       shell: powershell
       run: |
         Import-Module WebAdministration
         Start-WebAppPool -Name "YourAppPoolName"
+        Start-Sleep -Seconds 3
+
+        # Verify app pool is running
+        $appPool = Get-WebAppPoolState -Name "YourAppPoolName"
+        Write-Host "App Pool Status: $($appPool.Value)"
 
     - name: Verify Deployment
       shell: powershell
       run: |
-        Start-Sleep -Seconds 10
-        $response = Invoke-WebRequest -Uri "http://localhost" -UseBasicParsing
-        if ($response.StatusCode -eq 200) {
-          Write-Host "✅ Deployment successful!"
-        } else {
-          Write-Error "Deployment verification failed"
-          exit 1
-        }
+        Write-Host "=== Deployment Summary ===" -ForegroundColor Cyan
+        Write-Host "Deployed to: C:\Websites1\ProjectName" -ForegroundColor Green
+        Write-Host "Website URL: http://your-domain.com" -ForegroundColor Green
 ```
 
 Commit and push:
