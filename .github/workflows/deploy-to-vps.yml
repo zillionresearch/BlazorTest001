@@ -32,7 +32,7 @@ jobs:
         Import-Module WebAdministration
         Stop-WebAppPool -Name "BlazorTest001"
         Start-Sleep -Seconds 5
-      shell: pwsh
+      shell: powershell
 
     - name: Deploy to IIS
       run: |
@@ -47,7 +47,7 @@ jobs:
         Copy-Item -Path "./publish/*" -Destination $destination -Recurse -Force
 
         Write-Host "Deployment complete to $destination"
-      shell: pwsh
+      shell: powershell
 
     - name: Start IIS App Pool
       run: |
@@ -58,7 +58,7 @@ jobs:
         # Verify app pool is running
         $appPool = Get-WebAppPoolState -Name "BlazorTest001"
         Write-Host "App Pool Status: $($appPool.Value)"
-      shell: pwsh
+      shell: powershell
 
     - name: Verify deployment
       run: |
@@ -69,4 +69,4 @@ jobs:
         Write-Host ""
         Write-Host "Verify site is running:" -ForegroundColor Yellow
         Write-Host "  curl http://test.moneyworkdesk.com" -ForegroundColor Gray
-      shell: pwsh
+      shell: powershell
